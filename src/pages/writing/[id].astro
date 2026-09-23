@@ -37,7 +37,7 @@ function formatDate(date: Date) {
   title={`${post.data.title} | moonaneul`}
   description={post.data.description}
 >
-  <main class="article-page">
+  <main id="main-content" class="article-page">
     <article>
       <header class="article-header">
         <p class="article-meta">
@@ -111,7 +111,7 @@ function formatDate(date: Date) {
   .article-page {
     width: min(calc(100% - 48px), var(--page-width));
     margin: 0 auto;
-    padding: 96px 0 140px;
+    padding: 104px 0 144px;
   }
 
   article {
@@ -119,140 +119,282 @@ function formatDate(date: Date) {
     margin: 0 auto;
   }
 
-  .article-header {
-    max-width: var(--reading-width);
-  }
+  /* ------------------------------
+     Article Header
+  ------------------------------ */
 
   .article-meta {
     color: var(--color-accent);
-    font-size: 0.74rem;
+
+    font-size: 0.72rem;
     font-weight: 600;
+    line-height: 1.4;
     letter-spacing: 0.08em;
   }
 
   .article-header h1 {
-    margin-top: 20px;
+    max-width: 680px;
+    margin-top: 22px;
 
-    font-size: clamp(2.3rem, 5vw, 3.4rem);
-    line-height: 1.25;
+    font-size: clamp(2.4rem, 5vw, 3.35rem);
+    line-height: 1.22;
     font-weight: 620;
     letter-spacing: -0.045em;
+
+    word-break: keep-all;
   }
 
   .article-description {
-    margin-top: 22px;
+    max-width: 640px;
+    margin-top: 24px;
 
     color: var(--color-text-muted);
-    font-size: 1.08rem;
-    line-height: 1.7;
+
+    font-size: 1.06rem;
+    line-height: 1.75;
+    letter-spacing: -0.012em;
+
+    word-break: keep-all;
   }
 
   .article-date {
-    margin-top: 22px;
+    margin-top: 24px;
 
     color: var(--color-text-light);
-    font-size: 0.76rem;
+
+    font-size: 0.75rem;
+    line-height: 1.5;
     letter-spacing: 0.04em;
   }
 
   .article-divider {
     height: 1px;
-    margin: 56px 0 64px;
+    margin: 64px 0 72px;
 
     background: var(--color-border);
   }
 
+  /* ------------------------------
+     Article Body
+  ------------------------------ */
+
   .article-body {
+    color: var(--color-text);
+
     font-size: 1.05rem;
-    line-height: 1.85;
+    line-height: 1.88;
+    letter-spacing: -0.012em;
+
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   .article-body :global(p) {
-    margin: 0 0 1.5em;
+    margin: 0 0 1.65em;
+  }
+
+  .article-body :global(strong) {
+    font-weight: 650;
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    scroll-margin-top: 48px;
   }
 
   .article-body :global(h2) {
-    margin: 3.2em 0 1em;
+    margin: 3.4em 0 1em;
 
     font-size: 1.75rem;
-    line-height: 1.4;
+    line-height: 1.42;
     font-weight: 620;
     letter-spacing: -0.035em;
+
+    word-break: keep-all;
   }
 
   .article-body :global(h3) {
-    margin: 2.5em 0 0.8em;
+    margin: 2.7em 0 0.85em;
 
-    font-size: 1.3rem;
-    line-height: 1.45;
+    font-size: 1.28rem;
+    line-height: 1.5;
     font-weight: 600;
+    letter-spacing: -0.025em;
+
+    word-break: keep-all;
   }
 
+  /* ------------------------------
+     Lists
+  ------------------------------ */
+
   .article-body :global(ul),
-  .article-body :global(ol) {
-    margin: 1.4em 0;
-    padding-left: 1.5em;
+  .article-body :global(ol){
+    margin: 1.5em 0 1.8em;
+    padding-left: 1.45em;
+}
+
+.article-body :global(ul) {
+  list-style: disc;
+}
+
+.article-body :global(ol) {
+  list-style: decimal;
+}
+
+  .article-body :global(li) {
+    padding-left: 0.2em;
   }
 
   .article-body :global(li + li) {
-    margin-top: 0.45em;
+    margin-top: 0.5em;
   }
+
+  /* ------------------------------
+     Links
+  ------------------------------ */
 
   .article-body :global(a) {
     color: var(--color-accent);
-    text-decoration: underline;
+
+    text-decoration-line: underline;
     text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
+
+    transition: opacity 160ms ease;
   }
 
+  .article-body :global(a:hover) {
+    opacity: 0.72;
+  }
+
+  /* ------------------------------
+     Blockquote
+  ------------------------------ */
+
   .article-body :global(blockquote) {
-    margin: 2em 0;
-    padding-left: 20px;
+    margin: 2.4em 0;
+    padding: 2px 0 2px 22px;
 
     border-left: 2px solid var(--color-accent);
 
     color: var(--color-text-muted);
   }
 
+  .article-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* ------------------------------
+     Code
+  ------------------------------ */
+
   .article-body :global(code) {
     font-family: var(--font-mono);
-    font-size: 0.9em;
+    font-size: 0.88em;
   }
 
   .article-body :global(:not(pre) > code) {
-    padding: 0.15em 0.35em;
+    padding: 0.16em 0.38em;
 
     background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
   }
 
   .article-body :global(pre) {
-    margin: 2em 0;
+    max-width: 100%;
+    margin: 2.2em 0;
     padding: 20px 22px;
 
     overflow-x: auto;
 
     border: 1px solid var(--color-border);
     border-radius: 6px;
+
+    line-height: 1.65;
   }
+
+  /* ------------------------------
+     Images
+  ------------------------------ */
 
   .article-body :global(img) {
     display: block;
 
     max-width: 100%;
     height: auto;
-    margin: 2.5em auto;
+
+    margin: 2.8em auto;
   }
 
+  .article-body :global(figure) {
+    margin: 2.8em 0;
+  }
+
+  .article-body :global(figure img) {
+    margin: 0 auto;
+  }
+
+  .article-body :global(figcaption) {
+    margin-top: 10px;
+
+    color: var(--color-text-light);
+
+    font-size: 0.78rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* ------------------------------
+     Table
+  ------------------------------ */
+
+  .article-body :global(table) {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    margin: 2.2em 0;
+
+    overflow-x: auto;
+
+    border-collapse: collapse;
+
+    font-size: 0.92rem;
+  }
+
+  .article-body :global(th),
+  .article-body :global(td) {
+    padding: 10px 14px;
+
+    border-bottom: 1px solid var(--color-border);
+
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .article-body :global(th) {
+    font-weight: 600;
+  }
+
+  /* ------------------------------
+     Divider
+  ------------------------------ */
+
   .article-body :global(hr) {
-    margin: 4em 0;
+    margin: 4.5em 0;
 
     border: 0;
     border-top: 1px solid var(--color-border);
   }
 
+  /* ------------------------------
+     Article Footer
+  ------------------------------ */
+
   .article-footer {
-    margin-top: 88px;
+    margin-top: 96px;
     padding-top: 32px;
 
     border-top: 1px solid var(--color-border);
@@ -266,7 +408,8 @@ function formatDate(date: Date) {
     margin-bottom: 12px;
 
     color: var(--color-text-light);
-    font-size: 0.72rem;
+
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -285,17 +428,24 @@ function formatDate(date: Date) {
 
   .tag-list li {
     color: var(--color-text-muted);
-    font-size: 0.9rem;
+
+    font-size: 0.88rem;
   }
 
   .project-link {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
+
+    transition: color 160ms ease;
   }
 
   .project-link:hover {
     color: var(--color-accent);
   }
+
+  /* ------------------------------
+     Mobile
+  ------------------------------ */
 
   @media (max-width: 700px) {
     .article-page {
@@ -306,29 +456,60 @@ function formatDate(date: Date) {
     .article-header h1 {
       margin-top: 16px;
 
-      font-size: 2.2rem;
+      font-size: 2.15rem;
+      line-height: 1.28;
     }
 
     .article-description {
+      margin-top: 18px;
+
       font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .article-date {
+      margin-top: 20px;
     }
 
     .article-divider {
-      margin: 44px 0 48px;
+      margin: 46px 0 52px;
     }
 
     .article-body {
       font-size: 1rem;
-      line-height: 1.82;
+      line-height: 1.84;
+
+      word-break: normal;
+    }
+
+    .article-body :global(p) {
+      margin-bottom: 1.55em;
     }
 
     .article-body :global(h2) {
-      margin-top: 2.8em;
+      margin-top: 3em;
+
       font-size: 1.5rem;
     }
 
+    .article-body :global(h3) {
+      margin-top: 2.4em;
+
+      font-size: 1.2rem;
+    }
+
+    .article-body :global(pre) {
+      margin-right: -4px;
+      margin-left: -4px;
+      padding: 18px;
+    }
+
+    .article-body :global(blockquote) {
+      padding-left: 16px;
+    }
+
     .article-footer {
-      margin-top: 64px;
+      margin-top: 72px;
     }
   }
 </style>

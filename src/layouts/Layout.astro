@@ -6,11 +6,15 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  type?: 'website' | 'article';
 }
 
 const {
   title = 'moonaneul',
   description = '기술과 미디어, 만들고 생각한 것을 기록합니다.',
+  image,
+  type = 'website',
 } = Astro.props;
 ---
 
@@ -19,16 +23,59 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-
     <title>{title}</title>
-  </head>
+  <meta name="description" content={description} />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content={type} />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:site_name" content="moonaneul" />
+
+  {image && <meta property="og:image" content={image} />}
+
+  <!-- X / Twitter -->
+  <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+
+  {image && <meta name="twitter:image" content={image} />}
+</head>
 
   <body>
+    <a class="skip-link" href="#main-content">
+      본문으로 바로가기
+    </a>
+
     <Header />
 
     <slot />
-    
+
     <Footer />
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 999;
+
+    padding: 10px 14px;
+
+    background: var(--color-text);
+    color: var(--color-bg);
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    transform: translateY(-200%);
+    transition: transform 160ms ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+</style>
