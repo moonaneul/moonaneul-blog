@@ -7,6 +7,17 @@ const navItems = [
   { label: 'Archive', href: '/archive/' },
   { label: 'About', href: '/about/' },
 ];
+
+function isActive(href: string) {
+  if (href === '/writing/') {
+    return (
+      pathname.startsWith('/writing/') ||
+      pathname.startsWith('/category/')
+    );
+  }
+
+  return pathname.startsWith(href);
+}
 ---
 
 <header class="site-header">
@@ -15,7 +26,8 @@ const navItems = [
       moonaneul
     </a>
 
-    <nav aria-label="주요 메뉴">
+    <!-- Desktop navigation -->
+    <nav class="desktop-nav" aria-label="주요 메뉴">
       <ul class="nav-list">
         {navItems.map((item) => (
           <li>
@@ -23,8 +35,9 @@ const navItems = [
               href={item.href}
               class:list={[
                 'nav-link',
-                pathname.startsWith(item.href) && 'is-active',
+                isActive(item.href) && 'is-active',
               ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
             >
               {item.label}
             </a>
@@ -32,6 +45,33 @@ const navItems = [
         ))}
       </ul>
     </nav>
+
+    <!-- Mobile navigation -->
+    <details class="mobile-menu">
+      <summary>
+        <span>Menu</span>
+      </summary>
+
+      <nav class="mobile-nav" aria-label="모바일 주요 메뉴">
+        <ul>
+          {navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'mobile-link',
+                  isActive(item.href) && 'is-active',
+                ]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
   </div>
 </header>
 
@@ -41,6 +81,8 @@ const navItems = [
   }
 
   .header-inner {
+    position: relative;
+
     width: min(calc(100% - 48px), var(--page-width));
     margin: 0 auto;
     padding: 32px 0;
@@ -52,11 +94,18 @@ const navItems = [
     border-bottom: 1px solid var(--color-border);
   }
 
+  /* Wordmark */
+
   .wordmark {
+    position: relative;
+    z-index: 20;
+
     font-size: 1.15rem;
     font-weight: 650;
     letter-spacing: -0.03em;
   }
+
+  /* Desktop */
 
   .nav-list {
     display: flex;
@@ -88,23 +137,117 @@ const navItems = [
     content: '';
 
     position: absolute;
-    left: 0;
     right: 0;
     bottom: -8px;
+    left: 0;
 
     height: 1px;
 
     background: var(--color-accent);
   }
 
-  @media (max-width: 700px) {
-    .header-inner {
-      width: min(calc(100% - 32px), var(--page-width));
-      padding: 22px 0;
-    }
+  /* Mobile */
 
-    .nav-list {
-      display: none;
-    }
+  .mobile-menu {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .header-inner {
+    width: min(calc(100% - 32px), var(--page-width));
+    padding: 22px 0;
   }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  /* Menu 버튼 */
+  .mobile-menu summary {
+    position: relative;
+    z-index: 20;
+
+    padding: 4px 0;
+
+    color: var(--color-text-muted);
+    font-size: 0.86rem;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    list-style: none;
+  }
+
+  .mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-menu summary::marker {
+    content: '';
+  }
+
+  .mobile-menu summary::after {
+    content: ' +';
+
+    color: var(--color-text-light);
+  }
+
+  .mobile-menu[open] summary::after {
+    content: ' −';
+  }
+
+  /* 펼쳐지는 메뉴 전체 */
+  .mobile-nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+
+  padding: 8px 0 16px;
+
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+  .mobile-nav ul {
+    width: min(calc(100% - 32px), var(--page-width));
+
+    margin: 0 auto;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .mobile-nav li {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mobile-nav li:last-child {
+    border-bottom: 0;
+  }
+
+  .mobile-link {
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .mobile-link:hover,
+  .mobile-link.is-active {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+}
 </style>
