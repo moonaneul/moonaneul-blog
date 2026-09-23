@@ -36,6 +36,7 @@ function formatDate(date: Date) {
 <Layout
   title={`${post.data.title} | moonaneul`}
   description={post.data.description}
+  type="article"
 >
   <main id="main-content" class="article-page">
     <article>
@@ -136,10 +137,10 @@ function formatDate(date: Date) {
     max-width: 680px;
     margin-top: 22px;
 
-    font-size: clamp(2.4rem, 5vw, 3.35rem);
-    line-height: 1.22;
-    font-weight: 620;
-    letter-spacing: -0.045em;
+    font-size: clamp(2.2rem, 5vw, 3rem);
+    line-height: 1.28;
+    font-weight: 500;
+    letter-spacing: -0.04em;
 
     word-break: keep-all;
   }

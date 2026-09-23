@@ -31,7 +31,7 @@ const categories = [
 ---
 
 <Layout>
-  <main class="home">
+  <main id="main-content" class="home">
     <section class="intro">
       <h1>
         기술과 미디어, 만들고 생각한 것을 기록합니다.
@@ -105,7 +105,7 @@ const categories = [
 </Layout>
 
 <style>
-  .home {
+  @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');  .home {
     width: min(calc(100% - 48px), var(--page-width));
     margin: 0 auto;
     padding-bottom: 120px;
@@ -117,10 +117,13 @@ const categories = [
   }
 
   .intro h1 {
-    font-size: clamp(1.65rem, 3vw, 2.2rem);
+    max-width: 620px;
+    font-family: 'Gaegu', var(--font-body);
+    font-size: clamp(2rem, 3.8vw, 2.65rem);    
+    font-weight: 400;
     line-height: 1.45;
-    font-weight: 550;
-    letter-spacing: -0.035em;
+    letter-spacing: 0.01em;
+    word-break: keep-all;
   }
 
   .home-section + .home-section {
@@ -258,8 +261,10 @@ const categories = [
 
     .intro h1 {
       max-width: 330px;
-
-      font-size: 1.65rem;
+      font-size: 1.75rem;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: 0;
     }
 
     .home-section + .home-section {
