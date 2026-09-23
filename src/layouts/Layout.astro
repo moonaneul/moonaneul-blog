@@ -18,6 +18,7 @@ const {
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const rssURL = new URL('/rss.xml', Astro.site);
+const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
 ---
 
 <!doctype html>
@@ -35,15 +36,16 @@ const rssURL = new URL('/rss.xml', Astro.site);
   <meta property="og:locale" content="ko_KR" />
   <meta property="og:site_name" content="moonaneul" />
 
-  {image && <meta property="og:image" content={image} />}
-
+  <meta property="og:image" content={ogImageURL.toString()} />
+  
   <!-- X / Twitter -->
-  <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-
-  {image && <meta name="twitter:image" content={image} />}
+  <meta name="twitter:image" content={ogImageURL.toString()} />
+  
   <link rel="canonical" href={canonicalURL.toString()} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link
   rel="alternate"
   type="application/rss+xml"
