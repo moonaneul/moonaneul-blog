@@ -1,0 +1,31 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'moonaneul',
+  description = '기술과 미디어, 만들고 생각한 것을 기록합니다.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <Header />
+
+    <slot />
+  </body>
+</html>

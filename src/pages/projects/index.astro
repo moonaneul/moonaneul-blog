@@ -1,0 +1,160 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .filter((project) => !project.data.draft);
+---
+
+<Layout
+  title="Projects | moonaneul"
+  description="만들고 참여하며 남긴 프로젝트와 기록."
+>
+  <main class="projects-page">
+    <header class="page-header">
+      <h1>Projects</h1>
+      <p>만들고 참여하며 남긴 프로젝트와 기록.</p>
+    </header>
+
+    <div class="project-list">
+      {projects.map((project) => (
+        <article class="project-item">
+          <div class="project-period">
+            {project.data.period}
+          </div>
+
+          <div class="project-content">
+            <h2>
+              <a href={`/projects/${project.id}/`}>
+                {project.data.name}
+              </a>
+            </h2>
+
+            <p>
+              {project.data.description}
+            </p>
+
+            <span class="project-more">
+              Project →
+            </span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .projects-page {
+    width: min(calc(100% - 48px), var(--page-width));
+    margin: 0 auto;
+    padding: 88px 0 120px;
+  }
+
+  .page-header {
+    max-width: 620px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  .page-header p {
+    margin-top: 14px;
+
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  .project-list {
+    margin-top: 72px;
+
+    border-top: 1px solid var(--color-border);
+  }
+
+  .project-item {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 32px;
+
+    padding: 40px 0;
+
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-period {
+    padding-top: 5px;
+
+    color: var(--color-text-light);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+  }
+
+  .project-content {
+    max-width: 680px;
+  }
+
+  .project-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .project-content h2 a {
+    transition: color 160ms ease;
+  }
+
+  .project-content h2 a:hover {
+    color: var(--color-accent);
+  }
+
+  .project-content p {
+    margin-top: 10px;
+
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .project-more {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    color: var(--color-text-light);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 700px) {
+    .projects-page {
+      width: min(calc(100% - 32px), var(--page-width));
+      padding: 64px 0 80px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .project-list {
+      margin-top: 56px;
+    }
+
+    .project-item {
+      display: block;
+
+      padding: 32px 0;
+    }
+
+    .project-period {
+      margin-bottom: 12px;
+    }
+
+    .project-content h2 {
+      font-size: 1.3rem;
+    }
+  }
+</style>

@@ -1,0 +1,223 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort(
+    (a, b) =>
+      b.data.publishedAt.getTime() -
+      a.data.publishedAt.getTime()
+  );
+
+const years = [
+  ...new Set(
+    posts.map((post) => post.data.publishedAt.getFullYear())
+  ),
+];
+
+function formatMonth(date: Date) {
+  return new Intl.DateTimeFormat('en', {
+    month: 'long',
+  }).format(date);
+}
+
+function formatDay(date: Date) {
+  return new Intl.DateTimeFormat('en', {
+    day: '2-digit',
+  }).format(date);
+}
+---
+
+<Layout
+  title="Archive | moonaneul"
+  description="시간의 흐름에 따라 정리한 글의 기록."
+>
+  <main class="archive-page">
+    <header class="page-header">
+      <h1>Archive</h1>
+      <p>시간의 흐름에 따라 정리한 글의 기록.</p>
+    </header>
+
+    <div class="archive">
+      {years.map((year) => {
+        const yearPosts = posts.filter(
+          (post) => post.data.publishedAt.getFullYear() === year
+        );
+
+        const months = [
+          ...new Set(
+            yearPosts.map((post) =>
+              post.data.publishedAt.getMonth()
+            )
+          ),
+        ];
+
+        return (
+          <section class="year-section">
+            <h2>{year}</h2>
+
+            <div class="months">
+              {months.map((month) => {
+                const monthPosts = yearPosts.filter(
+                  (post) =>
+                    post.data.publishedAt.getMonth() === month
+                );
+
+                return (
+                  <section class="month-section">
+                    <h3>
+                      {formatMonth(monthPosts[0].data.publishedAt)}
+                    </h3>
+
+                    <ul>
+                      {monthPosts.map((post) => (
+                        <li>
+                          <time
+                            datetime={post.data.publishedAt.toISOString()}
+                          >
+                            {formatDay(post.data.publishedAt)}
+                          </time>
+
+                          <a href={`/writing/${post.id}/`}>
+                            {post.data.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .archive-page {
+    width: min(calc(100% - 48px), var(--page-width));
+    margin: 0 auto;
+    padding: 88px 0 120px;
+  }
+
+  .page-header {
+    max-width: 620px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  .page-header p {
+    margin-top: 14px;
+
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  .archive {
+    margin-top: 80px;
+  }
+
+  .year-section + .year-section {
+    margin-top: 96px;
+  }
+
+  .year-section > h2 {
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid var(--color-border);
+
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .months {
+    margin-top: 40px;
+  }
+
+  .month-section {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .month-section + .month-section {
+    margin-top: 48px;
+  }
+
+  .month-section h3 {
+    padding-top: 4px;
+
+    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .month-section ul {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .month-section li {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 16px;
+
+    padding: 10px 0;
+  }
+
+  .month-section time {
+    padding-top: 2px;
+
+    color: var(--color-text-light);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .month-section a {
+    font-size: 0.98rem;
+    line-height: 1.55;
+
+    transition: color 160ms ease;
+  }
+
+  .month-section a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 700px) {
+    .archive-page {
+      width: min(calc(100% - 32px), var(--page-width));
+      padding: 64px 0 80px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .archive {
+      margin-top: 56px;
+    }
+
+    .month-section {
+      display: block;
+    }
+
+    .month-section h3 {
+      margin-bottom: 14px;
+    }
+
+    .month-section + .month-section {
+      margin-top: 40px;
+    }
+  }
+</style>

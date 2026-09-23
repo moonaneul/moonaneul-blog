@@ -1,17 +1,293 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort(
+    (a, b) =>
+      b.data.publishedAt.getTime() -
+      a.data.publishedAt.getTime()
+  )
+  .slice(0, 5);
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en', {
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+function formatMeta(value: string) {
+  return value.replaceAll('-', ' ').toUpperCase();
+}
+
+const categories = [
+  { label: 'Technology', href: '/category/technology/' },
+  { label: 'Media', href: '/category/media/' },
+  { label: 'Work', href: '/category/work/' },
+  { label: 'Personal', href: '/category/personal/' },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <main class="home">
+    <section class="intro">
+      <h1>
+        기술과 미디어, 만들고 생각한 것을 기록합니다.
+      </h1>
+    </section>
+
+    <section class="home-section">
+      <div class="section-heading">
+        <span class="section-number">01 /</span>
+        <h2>Recently</h2>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="post-list">
+        {posts.map((post) => (
+          <article class="post-item">
+            <time datetime={post.data.publishedAt.toISOString()}>
+              {formatDate(post.data.publishedAt)}
+            </time>
+
+            <div class="post-content">
+              <h3>
+                <a href={`/writing/${post.id}/`}>
+                  {post.data.title}
+                </a>
+              </h3>
+
+              <p class="description">
+                {post.data.description}
+              </p>
+
+              <p class="meta">
+                {formatMeta(post.data.category)}
+                <span aria-hidden="true"> · </span>
+                {formatMeta(post.data.type)}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="all-writing">
+        <a href="/writing/">
+          All writing <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="home-section explore">
+      <div class="section-heading">
+        <span class="section-number">02 /</span>
+        <h2>Explore</h2>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <nav aria-label="카테고리 탐색">
+        <ul>
+          {categories.map((category) => (
+            <li>
+              <a href={category.href}>
+                {category.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .home {
+    width: min(calc(100% - 48px), var(--page-width));
+    margin: 0 auto;
+    padding-bottom: 120px;
+  }
+
+  .intro {
+    max-width: 620px;
+    padding: 88px 0 112px;
+  }
+
+  .intro h1 {
+    font-size: clamp(1.65rem, 3vw, 2.2rem);
+    line-height: 1.45;
+    font-weight: 550;
+    letter-spacing: -0.035em;
+  }
+
+  .home-section + .home-section {
+    margin-top: 112px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .section-heading h2,
+  .section-number {
+    font-size: 0.78rem;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .section-number {
+    color: var(--color-accent);
+  }
+
+  .section-heading h2 {
+    color: var(--color-text-muted);
+  }
+
+  .section-divider {
+    margin-top: 16px;
+
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .post-item {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 24px;
+
+    padding: 32px 0;
+
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-item time {
+    padding-top: 4px;
+
+    color: var(--color-text-light);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  .post-content {
+    max-width: 680px;
+  }
+
+  .post-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .post-content h3 a {
+    transition: color 160ms ease;
+  }
+
+  .post-content h3 a:hover {
+    color: var(--color-accent);
+  }
+
+  .description {
+    margin-top: 8px;
+
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .meta {
+    margin-top: 14px;
+
+    color: var(--color-text-light);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+  }
+
+  .all-writing {
+    margin-top: 24px;
+
+    text-align: right;
+  }
+
+  .all-writing a {
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .all-writing a:hover {
+    color: var(--color-accent);
+  }
+
+  .explore ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 36px;
+
+    margin: 30px 0 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .explore a {
+    font-size: 1rem;
+    font-weight: 500;
+
+    transition: color 160ms ease;
+  }
+
+  .explore a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 700px) {
+    .home {
+      width: min(calc(100% - 32px), var(--page-width));
+      padding-bottom: 80px;
+    }
+
+    .intro {
+      padding: 64px 0 80px;
+    }
+
+    .intro h1 {
+      max-width: 330px;
+
+      font-size: 1.65rem;
+    }
+
+    .home-section + .home-section {
+      margin-top: 80px;
+    }
+
+    .post-item {
+      display: block;
+
+      padding: 28px 0;
+    }
+
+    .post-item time {
+      display: block;
+
+      margin-bottom: 12px;
+    }
+
+    .post-content h3 {
+      font-size: 1.2rem;
+    }
+
+    .explore ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+
+      margin-top: 28px;
+    }
+  }
+</style>

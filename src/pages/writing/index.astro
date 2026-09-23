@@ -1,0 +1,301 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort(
+    (a, b) =>
+      b.data.publishedAt.getTime() -
+      a.data.publishedAt.getTime()
+  );
+
+const years = [
+  ...new Set(
+    posts.map((post) => post.data.publishedAt.getFullYear())
+  ),
+];
+
+const categories = [
+  { label: 'All', href: '/writing/' },
+  { label: 'Technology', href: '/category/technology/' },
+  { label: 'Media', href: '/category/media/' },
+  { label: 'Work', href: '/category/work/' },
+  { label: 'Personal', href: '/category/personal/' },
+];
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: '2-digit',
+  })
+    .format(date)
+    .toUpperCase();
+}
+
+function formatMeta(value: string) {
+  return value.replaceAll('-', ' ').toUpperCase();
+}
+---
+
+<Layout
+  title="Writing | moonaneul"
+  description="배우고, 만들고, 생각하며 남긴 기록."
+>
+  <main class="writing">
+    <header class="page-header">
+      <h1>Writing</h1>
+      <p>배우고, 만들고, 생각하며 남긴 기록.</p>
+    </header>
+
+    <nav class="category-nav" aria-label="글 카테고리">
+      <ul>
+        {categories.map((category) => (
+          <li>
+            <a
+              href={category.href}
+              class:list={[
+                'category-link',
+                category.label === 'All' && 'is-active',
+              ]}
+              aria-current={category.label === 'All' ? 'page' : undefined}
+            >
+              {category.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="divider"></div>
+
+    <div class="years">
+      {years.map((year) => {
+        const yearPosts = posts.filter(
+          (post) => post.data.publishedAt.getFullYear() === year
+        );
+
+        return (
+          <section class="year-section">
+            <h2>{year}</h2>
+
+            <div class="post-list">
+              {yearPosts.map((post) => (
+                <article class="post-item">
+                  <time datetime={post.data.publishedAt.toISOString()}>
+                    {formatDate(post.data.publishedAt)}
+                  </time>
+
+                  <div class="post-content">
+                    <h3>
+                      <a href={`/writing/${post.id}/`}>
+                        {post.data.title}
+                      </a>
+                    </h3>
+
+                    <p class="description">
+                      {post.data.description}
+                    </p>
+
+                    <p class="meta">
+                      {formatMeta(post.data.category)}
+                      <span aria-hidden="true"> · </span>
+                      {formatMeta(post.data.type)}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .writing {
+    width: min(calc(100% - 48px), var(--page-width));
+    margin: 0 auto;
+    padding: 88px 0 120px;
+  }
+
+  .page-header {
+    max-width: 620px;
+  }
+
+  .page-header h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  .page-header p {
+    margin-top: 14px;
+
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  .category-nav {
+    margin-top: 64px;
+  }
+
+  .category-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 30px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .category-link {
+    position: relative;
+
+    color: var(--color-text-muted);
+    font-size: 0.86rem;
+    font-weight: 500;
+
+    transition: color 160ms ease;
+  }
+
+  .category-link:hover,
+  .category-link.is-active {
+    color: var(--color-text);
+  }
+
+  .category-link.is-active::after {
+    content: '';
+
+    position: absolute;
+    right: 0;
+    bottom: -8px;
+    left: 0;
+
+    height: 1px;
+
+    background: var(--color-accent);
+  }
+
+  .divider {
+    height: 1px;
+    margin-top: 28px;
+
+    background: var(--color-border);
+  }
+
+  .years {
+    margin-top: 72px;
+  }
+
+  .year-section + .year-section {
+    margin-top: 88px;
+  }
+
+  .year-section > h2 {
+    margin-bottom: 16px;
+
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .post-item {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 24px;
+
+    padding: 32px 0;
+
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-item time {
+    padding-top: 4px;
+
+    color: var(--color-text-light);
+    font-size: 0.76rem;
+    letter-spacing: 0.05em;
+  }
+
+  .post-content {
+    max-width: 680px;
+  }
+
+  .post-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .post-content h3 a {
+    transition: color 160ms ease;
+  }
+
+  .post-content h3 a:hover {
+    color: var(--color-accent);
+  }
+
+  .description {
+    margin-top: 8px;
+
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .meta {
+    margin-top: 14px;
+
+    color: var(--color-text-light);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+  }
+
+  @media (max-width: 700px) {
+    .writing {
+      width: min(calc(100% - 32px), var(--page-width));
+      padding: 64px 0 80px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .category-nav {
+      margin-top: 48px;
+
+      overflow-x: auto;
+    }
+
+    .category-nav ul {
+      flex-wrap: nowrap;
+      width: max-content;
+      padding-bottom: 10px;
+    }
+
+    .years {
+      margin-top: 56px;
+    }
+
+    .post-item {
+      display: block;
+
+      padding: 28px 0;
+    }
+
+    .post-item time {
+      display: block;
+
+      margin-bottom: 12px;
+    }
+
+    .post-content h3 {
+      font-size: 1.2rem;
+    }
+  }
+</style>

@@ -1,0 +1,334 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+
+  return posts
+    .filter((post) => !post.data.draft)
+    .map((post) => ({
+      params: {
+        id: post.id,
+      },
+      props: {
+        post,
+      },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+function formatMeta(value: string) {
+  return value.replaceAll('-', ' ').toUpperCase();
+}
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+---
+
+<Layout
+  title={`${post.data.title} | moonaneul`}
+  description={post.data.description}
+>
+  <main class="article-page">
+    <article>
+      <header class="article-header">
+        <p class="article-meta">
+          {formatMeta(post.data.category)}
+          <span aria-hidden="true"> · </span>
+          {formatMeta(post.data.type)}
+        </p>
+
+        <h1>{post.data.title}</h1>
+
+        <p class="article-description">
+          {post.data.description}
+        </p>
+
+        <div class="article-date">
+          <time datetime={post.data.publishedAt.toISOString()}>
+            {formatDate(post.data.publishedAt)}
+          </time>
+
+          {post.data.updatedAt && (
+            <>
+              <span aria-hidden="true"> · </span>
+              <span>
+                UPDATED {formatDate(post.data.updatedAt)}
+              </span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <div class="article-divider"></div>
+
+      <div class="article-body">
+        <Content />
+      </div>
+
+      {(post.data.tags.length > 0 || post.data.project) && (
+        <footer class="article-footer">
+          {post.data.tags.length > 0 && (
+            <section class="article-footer-section">
+              <p class="footer-label">Tags</p>
+
+              <ul class="tag-list">
+                {post.data.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {post.data.project && (
+            <section class="article-footer-section">
+              <p class="footer-label">Project</p>
+
+              <a
+                class="project-link"
+                href={`/projects/${post.data.project.id}/`}
+              >
+                {post.data.project.id}
+                <span aria-hidden="true"> →</span>
+              </a>
+            </section>
+          )}
+        </footer>
+      )}
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .article-page {
+    width: min(calc(100% - 48px), var(--page-width));
+    margin: 0 auto;
+    padding: 96px 0 140px;
+  }
+
+  article {
+    width: min(100%, var(--reading-width));
+    margin: 0 auto;
+  }
+
+  .article-header {
+    max-width: var(--reading-width);
+  }
+
+  .article-meta {
+    color: var(--color-accent);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .article-header h1 {
+    margin-top: 20px;
+
+    font-size: clamp(2.3rem, 5vw, 3.4rem);
+    line-height: 1.25;
+    font-weight: 620;
+    letter-spacing: -0.045em;
+  }
+
+  .article-description {
+    margin-top: 22px;
+
+    color: var(--color-text-muted);
+    font-size: 1.08rem;
+    line-height: 1.7;
+  }
+
+  .article-date {
+    margin-top: 22px;
+
+    color: var(--color-text-light);
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+  }
+
+  .article-divider {
+    height: 1px;
+    margin: 56px 0 64px;
+
+    background: var(--color-border);
+  }
+
+  .article-body {
+    font-size: 1.05rem;
+    line-height: 1.85;
+  }
+
+  .article-body :global(p) {
+    margin: 0 0 1.5em;
+  }
+
+  .article-body :global(h2) {
+    margin: 3.2em 0 1em;
+
+    font-size: 1.75rem;
+    line-height: 1.4;
+    font-weight: 620;
+    letter-spacing: -0.035em;
+  }
+
+  .article-body :global(h3) {
+    margin: 2.5em 0 0.8em;
+
+    font-size: 1.3rem;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 1.4em 0;
+    padding-left: 1.5em;
+  }
+
+  .article-body :global(li + li) {
+    margin-top: 0.45em;
+  }
+
+  .article-body :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .article-body :global(blockquote) {
+    margin: 2em 0;
+    padding-left: 20px;
+
+    border-left: 2px solid var(--color-accent);
+
+    color: var(--color-text-muted);
+  }
+
+  .article-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .article-body :global(:not(pre) > code) {
+    padding: 0.15em 0.35em;
+
+    background: var(--color-surface);
+    border-radius: 4px;
+  }
+
+  .article-body :global(pre) {
+    margin: 2em 0;
+    padding: 20px 22px;
+
+    overflow-x: auto;
+
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .article-body :global(img) {
+    display: block;
+
+    max-width: 100%;
+    height: auto;
+    margin: 2.5em auto;
+  }
+
+  .article-body :global(hr) {
+    margin: 4em 0;
+
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .article-footer {
+    margin-top: 88px;
+    padding-top: 32px;
+
+    border-top: 1px solid var(--color-border);
+  }
+
+  .article-footer-section + .article-footer-section {
+    margin-top: 36px;
+  }
+
+  .footer-label {
+    margin-bottom: 12px;
+
+    color: var(--color-text-light);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .tag-list li {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .project-link {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .project-link:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 700px) {
+    .article-page {
+      width: min(calc(100% - 32px), var(--page-width));
+      padding: 64px 0 96px;
+    }
+
+    .article-header h1 {
+      margin-top: 16px;
+
+      font-size: 2.2rem;
+    }
+
+    .article-description {
+      font-size: 1rem;
+    }
+
+    .article-divider {
+      margin: 44px 0 48px;
+    }
+
+    .article-body {
+      font-size: 1rem;
+      line-height: 1.82;
+    }
+
+    .article-body :global(h2) {
+      margin-top: 2.8em;
+      font-size: 1.5rem;
+    }
+
+    .article-footer {
+      margin-top: 64px;
+    }
+  }
+</style>
